@@ -100,6 +100,10 @@ export async function login(request, response) {
             { expiresIn: "2h" }
         );
 
+        if (user.isBanned) {
+			return res.status(400).json({ message: "You are banned" });
+		}
+
         return response.status(200).json({
 			message: "Login successful.",
 			token,
