@@ -1,8 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
 const Login = () => {
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -24,6 +26,7 @@ const Login = () => {
             const response = await axios.post("http://localhost:5000/login", formData);
             if (response.status === 200) {
                 localStorage.setItem("token", response.data.token);
+                login(response.data.user);
                 navigate("/");
             }
         } catch (error) {
