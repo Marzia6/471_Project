@@ -7,6 +7,9 @@ import Admin from "./components/Admin/Admin";
 import ManageUsers from "./components/Admin/ManageUsers/ManageUsers";
 import ManageGroups from "./components/Admin/ManageGroups/ManageGroups";
 import ManageReport from "./components/Admin/ManageReports/ManageReports";
+import NewPost from "./components/NewPost/NewPost";
+import NewReport from "./components/Report/NewReport";
+import ShowPosts from "./components/ShowPosts/ShowPosts";
 import CompanionText from "./pages/CompanionText";
 import TrainingProgram from "./pages/TrainingProgram";
 import axios from "axios";
@@ -112,16 +115,22 @@ const App = () => {
 								{user && user.userType === "admin" && (
 									<Link
 										to="/admin"
-										className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+										className="text-white hover:text-sage-100 transition-all duration-300"
 									>
 										Admin Dashboard
 									</Link>
 								)}
 								<Link
 									to="/new-post"
-									className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+									className="text-white hover:text-sage-100 transition-all duration-300"
 								>
 									New Post
+								</Link>
+								<Link
+									to="/showposts"
+									className="text-white hover:text-sage-100 transition-all duration-300"
+								>
+									Show Posts
 								</Link>
 								<Link
 									to="/timeline"
@@ -180,6 +189,9 @@ const App = () => {
 						path="/admin/manage-reports"
 						element={<ManageReport />}
 					/>
+					<Route path="/new-post" element={<NewPost />} />
+					<Route path="/report/:id" element={<NewReport />} />
+					<Route path="/showposts" element={<ShowPosts />} />
 				</Routes>
 			</div>
 		</Router>
