@@ -11,7 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function ManageAnalytics() {
-	const [analytics, setAnalytics] = (useState < any) | (null > null);
+	const [analytics, setAnalytics] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
