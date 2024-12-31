@@ -7,6 +7,7 @@ import Admin from "./components/Admin/Admin";
 import ManageUsers from "./components/Admin/ManageUsers/ManageUsers";
 import ManageGroups from "./components/Admin/ManageGroups/ManageGroups";
 import ManageReport from "./components/Admin/ManageReports/ManageReports";
+import ManageAnalytics from "./components/Admin/ManageAnalytics/ManageAnalytics";
 import NewPost from "./components/NewPost/NewPost";
 import NewReport from "./components/Report/NewReport";
 import ShowPosts from "./components/ShowPosts/ShowPosts";
@@ -192,6 +193,10 @@ const App = () => {
 					<Route path="/new-post" element={<NewPost />} />
 					<Route path="/report/:id" element={<NewReport />} />
 					<Route path="/showposts" element={<ShowPosts />} />
+					<Route
+						path="/admin/analytics"
+						element={<ManageAnalytics />}
+					/>
 				</Routes>
 			</div>
 		</Router>
