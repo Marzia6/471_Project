@@ -1,4 +1,5 @@
 import Group from "../models/Group.js";
+import Post from "../models/Post.js";
 
 export const addNewGroup = async (req, res) => {
 	try {
@@ -56,6 +57,7 @@ export const editGroup = async (req, res) => {
 
 export const deleteGroup = async (req, res) => {
 	try {
+		await Post.deleteMany({ group: req.params.id });
 		const group = await Group.findByIdAndDelete(req.params.id);
 
 		if (!group) {
