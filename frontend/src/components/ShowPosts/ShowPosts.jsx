@@ -77,6 +77,7 @@ const PostCard = ({ post, user, onUpvote, onDelete, onOpenModal }) => {
 			<div className="flex justify-between items-center text-gray-400 text-sm mt-auto pt-4 border-t">
 				<div className="flex items-center space-x-3">
 					<button
+						onClick={() => onUpvote(post._id)}
 						className={`flex items-center space-x-1 ${
 							post.upvotedBy.includes(user?._id ?? "")
 								? "text-green-600 hover:text-green-700"
@@ -92,7 +93,10 @@ const PostCard = ({ post, user, onUpvote, onDelete, onOpenModal }) => {
 						/>
 						<span>{post.upvotedBy.length}</span>
 					</button>
-					<button className="flex items-center space-x-1 text-gray-600 hover:text-gray-800">
+					<button
+						onClick={() => onOpenModal(post)}
+						className="flex items-center space-x-1 text-gray-600 hover:text-gray-800"
+					>
 						<MessageCircle className="w-5 h-5" />
 						<span>Comments</span>
 					</button>
