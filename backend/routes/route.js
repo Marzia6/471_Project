@@ -2,38 +2,50 @@ import express from "express";
 import { signup, login, profile, updateProfile } from "../controllers/All.js";
 import { authenticateToken } from "../config/middlewares.js";
 import {
-	getUserById,
-	deleteUser,
-	toggleBanUser,
-	getAllUsers,
-	searchUsers,
+  getUserById,
+  deleteUser,
+  toggleBanUser,
+  getAllUsers,
+  searchUsers,
 } from "../controllers/userController.js";
 import {
-	addNewGroup,
-	deleteGroup,
-	editGroup,
-	getAllGroups,
+  addNewGroup,
+  deleteGroup,
+  editGroup,
+  getAllGroups,
 } from "../controllers/groupController.js";
 import {
-	addNewPost,
-	fetchPosts,
-	addUpvote,
-	deletePost,
+  addNewPost,
+  fetchPosts,
+  addUpvote,
+  deletePost,
 } from "../controllers/postController.js";
 import {
-	addNewComment,
-	deleteComment,
-	getCommentsByPostId,
+  addNewComment,
+  deleteComment,
+  getCommentsByPostId,
 } from "../controllers/commentController.js";
 import {
-	addNewReport,
-	deletePostByReportId,
-	deleteReportById,
-	getAllReports,
-	searchReports,
+  addNewReport,
+  deletePostByReportId,
+  deleteReportById,
+  getAllReports,
+  searchReports,
 } from "../controllers/ReportController.js";
 import { getAnalytics } from "../controllers/analyticsController.js";
+import {
+  sendMsg,
+  getMessages,
+  deleteMsg,
+  updateMsg,
+} from "../controllers/chatController.js";
+
 const router = express.Router();
+
+router.post("/sendmsg/:uid/:id", sendMsg);
+router.get("/getmessages/:uid/:id", getMessages);
+router.delete("/deletemsg", deleteMsg);
+router.put("/updatemsg", updateMsg);
 
 router.post("/signup", signup);
 router.post("/login", login);
