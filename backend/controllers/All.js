@@ -4,85 +4,28 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = "soul";
 
-export async function signup(request, response) {
+export async function signup (req, res) {
     try {
-        const body = await request.body;
-        const {
-            referral,
-            mentalCondition,
-            name,
-            username,
-            email,
-            password,
-            ageGroup,
-            gender,
-            country,
-            goals,
-            preferences
-        } = body;
-        const requiredFields = {
-            referral,
-            mentalCondition,
-            name,
-            username,
-            email,
-            password,
-            ageGroup,
-            gender,
-            country,
-            goals,
-            preferences
-        };
-        const missingFields = Object.entries(requiredFields)
-            .filter(([_, value]) => !value)
-            .map(([key]) => key);
-
-        if (missingFields.length > 0) {
-            return response.status(400).json({
-                message: `Missing required fields: ${missingFields.join(', ')}`
-            });
-        }
-        const existingUser = await User.findOne({ email });
-
-        if (existingUser) {
-            if (existingUser.email === email) {
-                return response.status(400).json({
-                    message: "Email already in use."
-                });
-            }
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            referral,
-            mentalCondition,
-            name,
-            username,
-            email,
-            password: hashedPassword,
-            ageGroup,
-            gender,
-            country,
-            goals,
-            preferences
-        });
-        await newUser.save();
-
-        return response.status(201).json({
-            message: "User registered successfully.",
-            user: {
-                username: newUser.username,
-                email: newUser.email
-            }
-        });
-
+        // console.log("Received request to sign up");
+      const { name, email, password, profile } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      const user = new User({
+        name,
+        email,
+        password: hashedPassword,
+        role: 'member',
+        profile
+      });
+      
+      await user.save();
+      console.log("user saved")
+      const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+      res.json({ token, user: { ...user.toObject(), password: undefined } });
     } catch (error) {
-        console.error("Error during signup:", error);
-        return response.status(500).json({
-            message: "Internal server error."
-        });
+      res.status(500).json({ error: error.message });
     }
-}
-
+  };
 export async function login(request, response) {
     try {
         const { email, password } = request.body;
@@ -95,7 +38,7 @@ export async function login(request, response) {
             return response.status(401).json({ message: "Invalid email or password." });
         }
         const token = jwt.sign(
-            { id: user._id, email: user.email, username: user.username },
+            { userId: user._id, email: user.email, username: user.username },
             JWT_SECRET,
             { expiresIn: "2h" }
         );
@@ -103,7 +46,6 @@ export async function login(request, response) {
         if (user.isBanned) {
 			return res.status(400).json({ message: "You are banned" });
 		}
-
         return response.status(200).json({
 			message: "Login successful.",
 			token,
@@ -116,9 +58,8 @@ export async function login(request, response) {
 }
 
 export const profile = async (req, res) => {
-    console.log("Received request to get profile");
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.userId);
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
@@ -130,19 +71,29 @@ export const profile = async (req, res) => {
 
 
 export const updateProfile = async (req, res) => {
-    console.log("Received request to update profile");
     try {
-        const { name, username, email, password, newPassword } = req.body;
-        const userId = req.user.id; // Get user ID from the token
+        console.log("Received request to update profile");
+        const { 
+            name, 
+            email, 
+            password, 
+            newPassword,
+            profile
+        } = req.body;
+        
+        const userId = req.user.userId;
         const user = await User.findById(userId);
+        
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
-        const emailtaken = await User.findOne({ email })
-        if (emailtaken && emailtaken._id != userId) {
+
+        const emailTaken = await User.findOne({ email, _id: { $ne: userId } });
+        if (emailTaken) {
             return res.status(400).json({ message: "Email already in use." });
         }
-        if (newPassword != "") {
+
+        if (newPassword) {
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid current password." });
@@ -151,16 +102,23 @@ export const updateProfile = async (req, res) => {
         }
 
         user.name = name || user.name;
-        user.username = username || user.username;
         user.email = email || user.email;
+        user.profile = {
+            ...user.profile,
+            ...profile
+        };
 
         await user.save();
+        
+        const userResponse = user.toObject();
+        delete userResponse.password;
 
-        res.status(200).json({ user });
+        res.status(200).json({ user: userResponse });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
 
 

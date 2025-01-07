@@ -1,35 +1,36 @@
 import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
+    scenario: {
+      type: String,
+      required: true,
+      trim: true
+    },
     question: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
+      trim: true
     },
-    option1: {
-        type: [String],
-        required: true,
+    options: {
+      type: [String],
+      required: true,
+      validate: [arr => arr.length >= 2, 'At least 2 options are required']
     },
-    option2: {
-        type: [String],
-        required: true,
+    correctAnswer: {
+      type: Number,
+      required: true,
+      min: 0,
+      validate: function(value) {
+        return value < this.options.length;
+      }
     },
-    option3: {
-        type: [String],
-        required: true,
-    },
-    option4:
-    {
-        type: [String],
-        required: true,
-    },
-    resource: {
-        type: String,
-        required: true,
-    },
-    correct: {
-        type: Number,
-        required: true,
-    },
+    explanation: {
+      type: String,
+      required: true,
+      trim: true
+    }
+}, {
+    timestamps: true
 });
 
 const Question = mongoose.model("Question", questionSchema);

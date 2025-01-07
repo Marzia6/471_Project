@@ -11,10 +11,9 @@ import ManageAnalytics from "./components/Admin/ManageAnalytics/ManageAnalytics"
 import NewPost from "./components/NewPost/NewPost";
 import NewReport from "./components/Report/NewReport";
 import ShowPosts from "./components/ShowPosts/ShowPosts";
-import CompanionText from "./pages/CompanionText";
+import QualificationTest from "./pages/QualificationTest";
 import TrainingProgram from "./pages/TrainingProgram";
 import axios from "axios";
-import { useAuth } from "./Context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
 const Home = () => {
@@ -23,139 +22,153 @@ const Home = () => {
 	useEffect(() => {
 		const fetchQuote = async () => {
 			try {
-				const response = await axios.get(
-					"https://api.adviceslip.com/advice"
-				);
-				setQuote(response.data.slip.advice);
-				const data = response.data;
-				console.log("Fetched quote:", data);
+				// const randomNumber = Math.floor(Math.random() * 30) + 1;
+				const response = await axios.get(`https://dummyjson.com/quotes/random`);
+				setQuote(response.data.quote);
 			} catch (error) {
-				console.log("Error fetching quote:", error);
-				setQuote({
-					content:
-						"Welcome to a peaceful space for meaningful connections",
-					author: "CareCircle",
-				});
+				setQuote("Welcome to a peaceful space for meaningful connections");
 			}
 		};
-
 		fetchQuote();
 	}, []);
 
 	return (
-		<div className="max-w-4xl mx-auto mt-16 p-8 text-center">
-			<h1 className="text-4xl font-semibold text-slate-700 mb-6">
-				Welcome to CareCircle
-			</h1>
-			<div className="mt-8 p-6 bg-white rounded-lg shadow-md">
-				<p className="text-xl text-slate-600 italic mb-4">"{quote}"</p>
+		<div className="relative">
+			{/* Hero Section */}
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+				<div className="text-center">
+					<h1 className="text-6xl font-bold text-indigo-900 mb-8 tracking-tight">
+						Welcome to CareCircle
+					</h1>
+					<p className="text-2xl text-indigo-800 mb-12 max-w-3xl mx-auto">
+						Connect, Share, and Support Each Other
+					</p>
+
+					{/* Quote Card */}
+					<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 max-w-2xl mx-auto transform hover:scale-105 transition-all duration-300">
+						<p className="text-xl text-indigo-800 italic leading-relaxed">
+							"{quote}"
+						</p>
+					</div>
+
+					{/* Feature Cards */}
+					<div className="grid md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
+						<div className="bg-gradient-to-br from-indigo-800 to-indigo-900 p-6 rounded-xl shadow-lg text-white">
+							<h3 className="text-xl font-semibold mb-3">Connect</h3>
+							<p>Join a supportive community of like-minded individuals</p>
+						</div>
+						<div className="bg-gradient-to-br from-indigo-800 to-indigo-900 p-6 rounded-xl shadow-lg text-white">
+							<h3 className="text-xl font-semibold mb-3">Share</h3>
+							<p>Share your experiences and learn from others</p>
+						</div>
+						<div className="bg-gradient-to-br from-indigo-800 to-indigo-900 p-6 rounded-xl shadow-lg text-white">
+							<h3 className="text-xl font-semibold mb-3">Grow</h3>
+							<p>Develop meaningful connections and personal growth</p>
+						</div>
+					</div>
+				</div>
 			</div>
+
+			{/* Background Decoration */}
+			<div className="absolute inset-0 -z-10 bg-gradient-to-br from-sage-50 via-slate-50 to-sage-100" />
 		</div>
 	);
 };
 const App = () => {
-	const { user, logout } = useAuth();
+	const [currentUser, setCurrentUser] = useState(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	useEffect(() => {
-		const interval = setInterval(() => {
+		const interval = setInterval(async () => {
 			const token = localStorage.getItem("token");
+			const response = await axios.get("http://localhost:5000/profile", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			console.log(response.data.user);
+			const user = response.data.user;
+			setCurrentUser(user);
 			setIsLoggedIn(!!token);
 		}, 500);
 
 		return () => clearInterval(interval);
 	}, []);
-
 	const handleLogout = () => {
-		logout();
 		localStorage.removeItem("token");
+		location.reload();
 	};
 
 	return (
 		<Router>
 			<Toaster />
-			<nav className="bg-gradient-to-r from-indigo-800 to-indigo-900 p-4 shadow-sm">
-				<div className="max-w-6xl mx-auto flex justify-between items-center">
+			<nav className="bg-white/90 backdrop-blur-sm border-b border-indigo-100 p-4 sticky top-0 z-50">
+				<div className="max-w-7xl mx-auto flex justify-between items-center">
 					<div>
 						<Link
 							to="/"
-							className="text-white text-2xl font-semibold hover:text-sage-100 transition-all duration-300"
+							className="text-2xl font-bold bg-gradient-to-r from-indigo-800 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2"
 						>
-							CareCircle ✨
+							CareCircle <span className="text-2xl">🌱</span>
 						</Link>
 					</div>
-					<div className="space-x-8">
-						<Link
-							to="/become-a-companion"
-							className="text-white hover:text-sage-100 transition-all duration-300"
-						>
-							<span className="hover:-translate-y-0.5 inline-block transform">
+
+					<div className="flex items-center gap-6">
+						{currentUser && currentUser.role != 'companion' && (
+							<Link
+								to="/become-a-companion"
+								className="text-indigo-800 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300"
+							>
 								Become A Companion
-							</span>
-						</Link>
+							</Link>
+						)}
+
+
 						{!isLoggedIn ? (
 							<>
 								<Link
 									to="/login"
-									className="text-white hover:text-sage-100 transition-all duration-300"
+									className="text-indigo-800 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300"
 								>
-									<span className="hover:-translate-y-0.5 inline-block transform">
-										Login
-									</span>
+									Login
 								</Link>
 								<Link
 									to="/signup"
-									className="text-white hover:text-sage-100 transition-all duration-300"
+									className="bg-indigo-800 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300"
 								>
-									<span className="hover:-translate-y-0.5 inline-block transform">
-										Sign Up
-									</span>
+									Sign Up
 								</Link>
 							</>
 						) : (
 							<>
-								{user && user.userType === "admin" && (
+								{currentUser && currentUser.userType === "admin" && (
 									<Link
 										to="/admin"
-										className="text-white hover:text-sage-100 transition-all duration-300"
+										className="text-indigo-800 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300"
 									>
 										Admin Dashboard
 									</Link>
 								)}
 								<Link
 									to="/new-post"
-									className="text-white hover:text-sage-100 transition-all duration-300"
+									className="text-indigo-800 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300"
 								>
 									New Post
 								</Link>
 								<Link
 									to="/showposts"
-									className="text-white hover:text-sage-100 transition-all duration-300"
+									className="text-indigo-800 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300"
 								>
 									Show Posts
 								</Link>
 								<Link
-									to="/timeline"
-									className="text-white hover:text-sage-100 transition-all duration-300"
-								>
-									<span className="hover:-translate-y-0.5 inline-block transform">
-										My Timeline
-									</span>
-								</Link>
-								<Link
 									to="/profile"
-									className="text-white hover:text-sage-100 transition-all duration-300"
+									className="text-indigo-800 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all duration-300"
 								>
-									<span className="hover:-translate-y-0.5 inline-block transform">
-										Profile
-									</span>
+									Profile
 								</Link>
 								<button
 									onClick={handleLogout}
-									className="text-white hover:text-sage-100 transition-all duration-300"
+									className="bg-indigo-800 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300"
 								>
-									<span className="hover:-translate-y-0.5 inline-block transform">
-										Logout
-									</span>
+									Logout
 								</button>
 							</>
 						)}
@@ -171,7 +184,7 @@ const App = () => {
 					<Route path="/profile" element={<Profile />} />
 					<Route
 						path="/become-a-companion"
-						element={<CompanionText />}
+						element={<QualificationTest />}
 					/>
 					<Route
 						path="/training-program"
