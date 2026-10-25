@@ -44,18 +44,8 @@ npm install
 cd ..
 ```
 
-### 2. Configure environment variables
 
-Create a `.env` file in the project root:
-
-```env
-MONGO_URI=mongodb://127.0.0.1:27017/soulspeak
-PORT=5000
-```
-
-Replace `MONGO_URI` with your MongoDB connection string. `PORT=5000` is intentional: the frontend currently sends API and Socket.IO requests to `http://localhost:5000`. The backend's fallback port is `5001`, so set `PORT=5000` for the current frontend configuration.
-
-### 3. Start the backend
+### 2. Start the backend
 
 In a terminal at the project root:
 
@@ -65,7 +55,7 @@ npm run dev
 
 The API and Socket.IO server will be available at `http://localhost:5000`.
 
-### 4. Start the frontend
+### 3. Start the frontend
 
 In another terminal:
 
@@ -103,25 +93,6 @@ The Express router is mounted at the server root. The main endpoints are:
 
 The router also provides user, report, comment, and message-management endpoints; see [`backend/routes/route.js`](./backend/routes/route.js) for the complete route list.
 
-## Project structure
-
-```text
-.
-├── backend/
-│   ├── config/          # MongoDB connection and JWT middleware
-│   ├── controllers/     # Authentication, community, chat, and admin APIs
-│   ├── models/          # Mongoose models
-│   ├── routes/          # Express routes
-│   ├── index.js         # HTTP server and API setup
-│   └── socket.js        # Socket.IO events
-├── frontend/
-│   └── src/
-│       ├── components/  # Community, chat, and admin UI
-│       ├── pages/       # App pages
-│       └── Context/     # Authentication state
-├── package.json         # Backend development scripts and dependencies
-└── README.md
-```
 
 ## Available scripts
 
@@ -139,9 +110,3 @@ npm run build
 npm run preview
 npm run lint
 ```
-
-## Privacy and configuration
-
-- Keep `.env` private; never commit database credentials or other secrets.
-- The app handles sensitive mental-wellness profile information. Use a secured database and HTTPS, and review access controls before deploying publicly.
-- The home page requests advice from the third-party Advice Slip API.
